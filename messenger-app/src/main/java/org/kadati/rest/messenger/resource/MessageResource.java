@@ -13,7 +13,7 @@ import org.kadati.rest.messenger.service.MessengerService;
 
 /**
  *
- * @author kadat
+ * @author kadati
  */
 @Path("/messages")
 public class MessageResource {
@@ -22,8 +22,15 @@ public class MessageResource {
    
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   public List<Message> getMessages(){
-        
+   public List<Message> getMessages(@BeanParam MessageFilterBean msgFilterBean  /*@QueryParam("year") int year,
+		   							@QueryParam("start") int start,
+		   							@QueryParam("size") int size*/){
+       if(msgFilterBean.getYear() > 0) {
+    	   return service.getAllMessagesByYear(msgFilterBean.getYear() );
+       }
+       if(msgFilterBean.getStart()>=0 && msgFilterBean.getSize()> 0) {
+    	   return service.getFilteredMessages(msgFilterBean.getStart(),  msgFilterBean.getSize());
+       }
       return  service.getAllMessages();
     }
    

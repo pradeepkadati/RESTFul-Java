@@ -6,6 +6,7 @@
 package org.kadati.rest.messenger.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import org.kadati.rest.messenger.database.MessengerDB;
@@ -30,6 +31,28 @@ public class MessengerService {
        message.addAll(messages.values());
        return message;
     }
+    
+    public List<Message> getAllMessagesByYear(int year){
+        List<Message> message = new ArrayList<>();
+        Calendar cal = Calendar.getInstance();
+        for (Message msg:messages.values()) {
+        	cal.setTime(msg.getCreated());
+        	if (cal.get(Calendar.YEAR) == year) {
+        		message.add(msg);
+        	}
+        }
+        return message;
+     }
+    
+    public List<Message> getFilteredMessages(int start,int size){
+    	  List<Message> message = new ArrayList<>(messages.values());
+    	  
+    	  if (start+size > message.size()) {
+    		  return new ArrayList<>();
+    	  }
+        return message.subList(start, start+size);
+     }
+    
     
     public Message getMessages(long id){
       return messages.get(id);

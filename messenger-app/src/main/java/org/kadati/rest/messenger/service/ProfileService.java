@@ -1,12 +1,11 @@
 package org.kadati.rest.messenger.service;
 
-import org.kadati.rest.messenger.database.MessengerDB;
-import org.kadati.rest.messenger.model.Message;
-import org.kadati.rest.messenger.model.Profile;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.kadati.rest.messenger.database.MessengerDB;
+import org.kadati.rest.messenger.model.Profile;
 
 public class ProfileService {
 
