@@ -5,9 +5,15 @@
  */
 package org.kadati.rest.messenger.resource;
 
+import java.net.URI;
 import java.util.List;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.server.Uri;
 import org.kadati.rest.messenger.model.Message;
 import org.kadati.rest.messenger.service.MessengerService;
 
@@ -41,11 +47,14 @@ public class MessageResource {
         
       return  service.getMessages(messageId);
     }
+   
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Message addMessage(Message message){
-      return service.addMessage(message);
+    public Response addMessage(Message message, @Context UriInfo uriInfo){
+    	Message newMessage = service.addMessage(message);
+    	URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(newMessage.getId())).build();
+    	return Response.created(uri).entity(newMessage).build();
     }
 
 
@@ -63,5 +72,10 @@ public class MessageResource {
    public void removeMessage(@PathParam("messageId") long id){
       service.removeMessage(id);
    }
+   
+   @Path("/{messageId}/comments")
+	public CommentResource getCommentResource() {
+		return new CommentResource();
+	}
 
 }

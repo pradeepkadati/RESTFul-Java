@@ -7,9 +7,11 @@ package org.kadati.rest.messenger.service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.kadati.rest.messenger.database.MessengerDB;
+import org.kadati.rest.messenger.exception.DataNotFoundException;
 import org.kadati.rest.messenger.model.Message;
 
 /**
@@ -54,12 +56,19 @@ public class MessengerService {
      }
     
     
-    public Message getMessages(long id){
+	public Message getMessages(long id){
+    	
+      Message messsage = messages.get(id);
+      if (messsage == null) {
+    	  throw new DataNotFoundException("Message with id "+ id+" not found ");
+      }
+      
       return messages.get(id);
     }
     
     public Message addMessage(Message message){
         message.setId(messages.size()+1);
+        message.setCreated(new Date());
         messages.put(message.getId(), message);
         return message;
     }
