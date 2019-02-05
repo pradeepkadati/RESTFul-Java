@@ -7,13 +7,21 @@ package org.kadati.rest.messenger.resource;
 
 import java.net.URI;
 import java.util.List;
-import javax.ws.rs.*;
+
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.glassfish.jersey.server.Uri;
 import org.kadati.rest.messenger.model.Message;
 import org.kadati.rest.messenger.service.MessengerService;
 
@@ -43,11 +51,41 @@ public class MessageResource {
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{messageId}")
-   public Message getMessage(@PathParam("messageId") long messageId){
-        
-      return  service.getMessages(messageId);
+   public Message getJsonMessage(@PathParam("messageId") long messageId, @Context UriInfo uriInfo){
+	   System.out.println("JSON message is called");
+	   Message message = service.getMessages(messageId);
+	   message.addLink(getUriforSelf(uriInfo, message), "self");
+	   message.addLink(getUriforProfile(uriInfo, message), "profile");
+	   message.addLink(getUriforComments(uriInfo, message), "comments");
+	return  message;
     }
    
+   @GET
+   @Produces(MediaType.TEXT_XML)
+   @Path("/{messageId}")
+   public Message getXmlMessage(@PathParam("messageId") long messageId, @Context UriInfo uriInfo){
+	   System.out.println("XML message is called");
+	   Message message = service.getMessages(messageId);
+	   message.addLink(getUriforSelf(uriInfo, message), "self");
+	   message.addLink(getUriforProfile(uriInfo, message), "profile");
+	   message.addLink(getUriforComments(uriInfo, message), "comments");
+	return  message;
+    }
+
+	private String getUriforComments(UriInfo uriInfo, Message message) {
+		return uriInfo.getBaseUriBuilder().path(MessageResource.class).path(MessageResource.class, "getCommentResource").resolveTemplate("messageId", message.getId()).build()
+				.toString();
+}
+
+	private String getUriforSelf(UriInfo uriInfo, Message message) {
+		return uriInfo.getBaseUriBuilder().path(MessageResource.class).path(String.valueOf(message.getId())).build()
+				.toString();
+	}
+   
+	private String getUriforProfile(UriInfo uriInfo, Message message) {
+		return uriInfo.getBaseUriBuilder().path(ProfileResource.class).path(String.valueOf(message.getAuthor())).build()
+				.toString();
+	}
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
